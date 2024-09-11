@@ -7,6 +7,29 @@ import file_svg from '../svg/file.svg';
 import '../styles/FileExplorer.css';
 
 
+function getFilePath(root: FileType, targetFileName: string): string | null {
+   let result: string | null = null;
+
+
+   function traverse(fileMeta: FileType, currentPath: string) {
+       if (fileMeta.type === 'file') {
+           if (fileMeta.name === targetFileName) {
+               result = currentPath + fileMeta.name;
+           }
+       } else if (fileMeta.type === 'folder' && fileMeta.data) {
+           fileMeta.data.forEach(child => {
+               if (!result) { // Continue searching only if the file hasn't been found
+                   traverse(child, currentPath + fileMeta.name + '/');
+               }
+           });
+       }
+   }
+
+
+   traverse(root, '');
+   return result;
+}
+
 interface FileExplorerProps {
    files: FileType;
 }
@@ -38,7 +61,8 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ files }) => {
 
    const handleAction = (action: string) => {
        if (popover?.file) {
-           console.log(`Action: ${action}, File Path: ${popover.file.name}`);
+           const filePath = getFilePath(files, popover.file.name);
+           console.log(`Action: ${action}, File Path: ${filePath}`);
        }
        setPopover(null);
    };
