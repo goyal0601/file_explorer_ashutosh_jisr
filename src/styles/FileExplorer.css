@@ -1,0 +1,19 @@
+.file-explorer {
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.folder-name {
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+.folder {
+    margin-left: 20px;
+}
+
+.file {
+    margin-left: 20px;
+    cursor: pointer;
+    position: relative;
+}
