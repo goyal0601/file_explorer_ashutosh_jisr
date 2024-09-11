@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FileType } from '../types/FileType';
+import Popover from './Popover';
 import open_folder from '../svg/open_folder.svg';
 import close_folder from '../svg/close_folder.svg';
 import file_svg from '../svg/file.svg';
@@ -13,6 +14,8 @@ interface FileExplorerProps {
 
 const FileExplorer: React.FC<FileExplorerProps> = ({ files }) => {
    const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
+   const [popover, setPopover] = useState<{ x: number; y: number; file: FileType | null } | null>(null);
+   const popoverRef = useRef<HTMLDivElement>(null);
 
 
    const handleToggle = (folderName: string) => {
@@ -25,8 +28,41 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ files }) => {
 
    const handleRightClick = (e: React.MouseEvent, file: FileType) => {
        e.preventDefault();
+       setPopover({
+           x: e.clientX,
+           y: e.clientY,
+           file,
+       });
    };
 
+
+   const handleAction = (action: string) => {
+       if (popover?.file) {
+           console.log(`Action: ${action}, File Path: ${popover.file.name}`);
+       }
+       setPopover(null);
+   };
+
+
+   const handleClickOutside = (e: MouseEvent) => {
+       if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+           setPopover(null);
+       }
+   };
+
+
+   useEffect(() => {
+       if (popover) {
+           document.addEventListener('mousedown', handleClickOutside);
+       } else {
+           document.removeEventListener('mousedown', handleClickOutside);
+       }
+
+
+       return () => {
+           document.removeEventListener('mousedown', handleClickOutside);
+       };
+   }, [popover]);
 
 
    const renderFileTree = (file: FileType) => {
@@ -60,6 +96,17 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ files }) => {
    return (
        <div className="file-explorer">
            {renderFileTree(files)}
+           {popover && (
+               <div ref={popoverRef}>
+                   <Popover
+                       x={popover.x}
+                       y={popover.y}
+                       onCopy={() => handleAction('copy')}
+                       onDelete={() => handleAction('delete')}
+                       onRename={() => handleAction('rename')}
+                   />
+               </div>
+           )}
        </div>
    );
 };

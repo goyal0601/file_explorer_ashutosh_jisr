@@ -1,0 +1,20 @@
+.popover {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1501;
+    padding: 5px;
+ }
+ 
+ 
+ .popover-item {
+    padding: 8px 12px;
+    cursor: pointer;
+ }
+ 
+ 
+ .popover-item:hover {
+    background-color: #f0f0f0;
+ }
+ 
